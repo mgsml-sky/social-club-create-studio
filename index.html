@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Club Creator Studio - MGSML Sky Project</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #050b14 0%, #0d1b2a 40%, #1b0a2a 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(12, 28, 55, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1.5px solid rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+        }
+        .category-btn {
+            transition: all 0.25s ease;
+        }
+        .category-btn.active {
+            transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.6);
+            border-color: #00ff66 !important;
+            background: rgba(0, 255, 102, 0.2) !important;
+        }
+        ::-webkit-scrollbar { width: 0px; }
+    </style>
+</head>
+<body class="pb-24">
+
+    <!-- Top Colorful Header Bar -->
+    <header class="sticky top-0 z-40 glass-card border-b border-cyan-400/40 px-4 py-3.5 flex items-center justify-between shadow-2xl">
+        <div class="flex items-center space-x-3">
+            <button onclick="openDrawer()" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-black font-black flex items-center justify-center text-lg active:scale-95 transition-all shadow-lg shadow-cyan-500/30">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="flex items-center space-x-2.5">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-cyan-400 flex items-center justify-center text-black font-black text-xl shadow-lg shadow-pink-500/40">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-base font-black tracking-wider bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent leading-tight">
+                        MGSML SKY
+                    </span>
+                    <span class="text-[10px] font-extrabold text-green-400 tracking-widest">
+                        CREATOR STUDIO & MANAGER
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <a href="index.html" class="px-3.5 py-1.5 rounded-full bg-pink-600/20 border border-pink-500 text-pink-400 text-xs font-black shadow-lg flex items-center space-x-1.5 active:scale-95 transition">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Navigation Bar with Category Buttons -->
+    <nav class="max-w-xl mx-auto px-4 mt-4">
+        <div class="glass-card p-2 rounded-2xl border border-cyan-400/40 shadow-xl flex items-center justify-between space-x-2">
+            <button type="button" id="cat-short" onclick="setCategory('short')" class="category-btn active flex-1 py-2.5 px-2 rounded-xl bg-slate-900 border border-pink-500 text-pink-400 font-black text-[11px] flex items-center justify-center space-x-1.5 shadow-md">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Shorts</span>
+            </button>
+            <button type="button" id="cat-medium" onclick="setCategory('medium')" class="category-btn flex-1 py-2.5 px-2 rounded-xl bg-slate-900 border border-cyan-500 text-cyan-400 font-black text-[11px] flex items-center justify-center space-x-1.5 shadow-md">
+                <i class="fa-solid fa-video"></i>
+                <span>Medium</span>
+            </button>
+            <button type="button" id="cat-movie" onclick="setCategory('movie')" class="category-btn flex-1 py-2.5 px-2 rounded-xl bg-slate-900 border border-yellow-500 text-yellow-400 font-black text-[11px] flex items-center justify-center space-x-1.5 shadow-md">
+                <i class="fa-solid fa-film"></i>
+                <span>Movies</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Side Navigation Drawer with Edit Tool Trigger -->
+    <div id="sideDrawer" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-[900] hidden flex justify-start">
+        <div class="w-72 bg-[#0c121d] h-full border-r border-cyan-400/40 p-5 flex flex-col justify-between shadow-2xl relative overflow-y-auto">
+            <div class="space-y-6">
+                <div class="flex items-center justify-between border-b border-cyan-400/30 pb-4">
+                    <h3 class="font-black text-sm text-cyan-400 flex items-center space-x-2">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>STUDIO MENU</span>
+                    </h3>
+                    <button onclick="closeDrawer()" class="text-gray-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-3 text-xs font-bold">
+                    <a href="index.html" class="w-full text-left px-4 py-3 rounded-xl bg-slate-900 border border-cyan-400/30 text-white hover:border-cyan-400 flex items-center space-x-3">
+                        <i class="fa-solid fa-house text-cyan-400"></i>
+                        <span>Home Feed</span>
+                    </a>
+                    <a href="movies.html" class="w-full text-left px-4 py-3 rounded-xl bg-slate-900 border border-yellow-400/30 text-white hover:border-yellow-400 flex items-center space-x-3">
+                        <i class="fa-solid fa-film text-yellow-400"></i>
+                        <span>Movies Hub</span>
+                    </a>
+                    <a href="shorts.html" class="w-full text-left px-4 py-3 rounded-xl bg-slate-900 border border-pink-400/30 text-white hover:border-pink-400 flex items-center space-x-3">
+                        <i class="fa-solid fa-clapperboard text-pink-400"></i>
+                        <span>Shorts Reels</span>
+                    </a>
+                    <button onclick="openEditManagerModal(); closeDrawer();" class="w-full text-left px-4 py-3 rounded-xl bg-slate-900 border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 flex items-center space-x-3">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Edit Video & Thumbnail</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1" onclick="closeDrawer()"></div>
+    </div>
+
+    <!-- Main Container: Upload Hub -->
+    <main class="max-w-xl mx-auto px-4 mt-4 space-y-6">
+
+        <div class="glass-card rounded-3xl p-6 border border-cyan-400/50 shadow-2xl space-y-6">
+            
+            <div class="text-center border-b border-cyan-400/20 pb-4">
+                <h2 id="selectedCategoryTitle" class="text-base font-black bg-gradient-to-r from-yellow-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent uppercase tracking-wider">
+                    Upload Short Video (≤60s)
+                </h2>
+                <p class="text-[11px] font-bold text-gray-300 mt-1">Direct Paid Enterprise Stream Upload via Bunny.net</p>
+            </div>
+
+            <!-- Upload Inputs Form -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-black text-cyan-300 mb-1.5">Video Title</label>
+                    <input type="text" id="uploadTitleInput" placeholder="Enter catchy title..." class="w-full bg-slate-950 border-2 border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-white font-bold focus:outline-none focus:border-green-400">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-cyan-300 mb-1.5">Description / Tags</label>
+                    <textarea id="uploadDescInput" rows="2" placeholder="Write description..." class="w-full bg-slate-950 border-2 border-cyan-500/50 rounded-xl p-3 text-xs text-white font-bold resize-none focus:outline-none focus:border-green-400"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-yellow-400 mb-1.5">Custom Thumbnail (Recommended: 1280x720 HD)</label>
+                    <input type="file" id="uploadThumbnailInput" accept="image/*" class="w-full bg-slate-950 border-2 border-yellow-500/50 rounded-xl p-2 text-xs text-gray-300 font-bold file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-yellow-500 file:text-black hover:file:bg-yellow-400 cursor-pointer">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-cyan-300 mb-1.5">Choose Video File (Supports 2-3 Hour Long Movies)</label>
+                    <input type="file" id="uploadFileInput" accept="video/*,audio/*" class="w-full bg-slate-950 border-2 border-cyan-500/50 rounded-xl p-2 text-xs text-gray-300 font-bold file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-cyan-500 file:text-black hover:file:bg-cyan-400 cursor-pointer">
+                </div>
+
+                <!-- Real-time Progress Bar Wrapper -->
+                <div id="uploadProgressWrapper" class="hidden space-y-2 bg-slate-950 p-4 rounded-2xl border-2 border-yellow-500/50 shadow-inner">
+                    <div class="flex justify-between text-xs font-black">
+                        <span id="uploadStatusText" class="text-cyan-400">Initializing upload...</span>
+                        <span id="uploadPercentage" class="text-green-400">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-3.5 overflow-hidden border border-slate-700">
+                        <div id="uploadProgressBar" class="bg-gradient-to-r from-green-400 via-cyan-400 to-pink-500 h-full w-0 transition-all duration-200"></div>
+                    </div>
+                </div>
+
+                <button type="button" id="startUploadBtn" onclick="executeBunnyUpload()" class="w-full py-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-green-400 text-black font-black rounded-2xl text-sm shadow-xl shadow-green-500/20 active:scale-95 transition">
+                    UPLOAD TO BUNNY.NET & PUBLISH 🚀
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- VIDEO EDIT & MANAGER MODAL (Link Paste & Live Preview Engine) -->
+    <div id="editManagerModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[1000] hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-lg rounded-3xl p-6 border border-yellow-500/50 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-black text-yellow-400 flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>VIDEO EDIT & MANAGER STUDIO</span>
+                </h3>
+                <button onclick="closeEditManagerModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Paste Video Share Link or ID</label>
+                    <div class="flex space-x-2">
+                        <input type="text" id="searchEditVideoLink" placeholder="Paste link or Video ID (guid)..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                        <button onclick="findVideoForEditByLink()" class="px-4 py-2 bg-yellow-500 text-black font-black rounded-xl text-xs">Find</button>
+                    </div>
+                </div>
+
+                <!-- Edit Form Container with Live Video Preview (Hidden initially) -->
+                <div id="editFormContainer" class="hidden space-y-4 bg-slate-950 p-4 rounded-2xl border border-yellow-500/30">
+                    <input type="hidden" id="editTargetVideoId">
+                    
+                    <!-- Live Video Preview Screen -->
+                    <div>
+                        <label class="block text-xs font-bold text-cyan-400 mb-1.5">Live Video Preview</label>
+                        <div class="relative rounded-xl overflow-hidden border border-cyan-500/40 bg-black shadow-inner" style="padding-top: 56.25%;">
+                            <iframe id="editVideoPreviewIframe" src="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allowfullscreen="true"></iframe>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Edit Title</label>
+                        <input type="text" id="editTitleInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Edit Description</label>
+                        <textarea id="editDescInput" rows="2" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white font-bold resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Edit Category</label>
+                        <select id="editCategorySelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                            <option value="short">Short (≤60s)</option>
+                            <option value="medium">Medium (5-10m)</option>
+                            <option value="movie">Long Movie</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-yellow-400 mb-1">Edit Thumbnail (New HD Image)</label>
+                        <input type="file" id="editThumbnailInput" accept="image/*" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-gray-300 font-bold">
+                    </div>
+                    <button onclick="saveEditedVideoData()" class="w-full py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black rounded-xl text-xs shadow-lg">
+                        SAVE & UPDATE CHANGES ✨
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Engine -->
+    <script>
+        let selectedCategory = 'short';
+
+        function setCategory(cat) {
+            selectedCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`cat-${cat}`).classList.add('active');
+
+            let titleEl = document.getElementById('selectedCategoryTitle');
+            if(cat === 'short') titleEl.innerText = "Upload Short Video (≤60s)";
+            else if(cat === 'medium') titleEl.innerText = "Upload Medium Video (5-10m)";
+            else if(cat === 'movie') titleEl.innerText = "Upload Long Movie / Full Video";
+        }
+
+        function openDrawer() { document.getElementById('sideDrawer').classList.remove('hidden'); }
+        function closeDrawer() { document.getElementById('sideDrawer').classList.add('hidden'); }
+
+        function openEditManagerModal() { document.getElementById('editManagerModal').classList.remove('hidden'); }
+        function closeEditManagerModal() { document.getElementById('editManagerModal').classList.add('hidden'); }
+
+        const LIBRARY_ID = "799000";
+
+        // Helper to convert thumbnail to Base64
+        function readThumbnailFile(file) {
+            return new Promise((resolve, reject) => {
+                if(!file) { resolve(null); return; }
+                let reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = err => reject(err);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // --- FIND VIDEO BY LINK OR ID & SHOW LIVE PREVIEW ---
+        function findVideoForEditByLink() {
+            let inputVal = document.getElementById('searchEditVideoLink').value.trim();
+            if(!inputVal) { alert("Please paste a video link or ID!"); return; }
+
+            // Extract video ID/guid from link if full URL is pasted
+            let videoId = inputVal;
+            if(inputVal.includes('/')) {
+                let parts = inputVal.split('/');
+                for(let p of parts) {
+                    if(p.length > 20 && !p.includes('.')) { videoId = p; break; }
+                }
+            }
+
+            let savedMovies = JSON.parse(localStorage.getItem('mgsml_stream_movies') || '[]');
+            let found = savedMovies.find(m => String(m.id) === String(videoId) || m.title.toLowerCase().includes(inputVal.toLowerCase()));
+
+            if(found) {
+                document.getElementById('editTargetVideoId').value = found.id;
+                document.getElementById('editTitleInput').value = found.title;
+                document.getElementById('editDescInput').value = found.description || "";
+                document.getElementById('editCategorySelect').value = found.category || 'movie';
+
+                // Set Live Preview Iframe
+                let embedUrl = `https://iframe.mediadelivery.net/embed/${LIBRARY_ID}/${found.id}?autoplay=false&loop=false&muted=false`;
+                document.getElementById('editVideoPreviewIframe').src = embedUrl;
+
+                document.getElementById('editFormContainer').classList.remove('hidden');
+            } else {
+                alert("❌ Video not found in local storage! Please check the link or ID.");
+            }
+        }
+
+        async function saveEditedVideoData() {
+            let targetId = document.getElementById('editTargetVideoId').value;
+            let newTitle = document.getElementById('editTitleInput').value.trim();
+            let newDesc = document.getElementById('editDescInput').value.trim();
+            let newCat = document.getElementById('editCategorySelect').value;
+            let thumbFile = document.getElementById('editThumbnailInput').files[0];
+
+            let savedMovies = JSON.parse(localStorage.getItem('mgsml_stream_movies') || '[]');
+            let index = savedMovies.findIndex(m => String(m.id) === String(targetId));
+
+            if(index !== -1) {
+                savedMovies[index].title = newTitle;
+                savedMovies[index].description = newDesc;
+                savedMovies[index].category = newCat;
+
+                if(thumbFile) {
+                    let newThumbBase64 = await readThumbnailFile(thumbFile);
+                    savedMovies[index].thumbnail = newThumbBase64;
+                }
+
+                localStorage.setItem('mgsml_stream_movies', JSON.stringify(savedMovies));
+                alert("✨ Video details and thumbnail updated successfully!");
+                closeEditManagerModal();
+            } else {
+                alert("❌ Update failed!");
+            }
+        }
+
+        // --- MASTER BUNNY STREAM CONFIG & UPLOAD ---
+        const STREAM_CONFIG = {
+            libraryId: LIBRARY_ID,
+            apiKey: "8826df2c-1671-43b1-91f719e8614b-628a-4400",
+            cdnHostname: "vz-a6fb0e3a-e9f.b-cdn.net"
+        };
+
+        window.executeBunnyUpload = async function() {
+            let title = document.getElementById('uploadTitleInput').value.trim();
+            let desc = document.getElementById('uploadDescInput').value.trim();
+            let thumbInput = document.getElementById('uploadThumbnailInput');
+            let fileInput = document.getElementById('uploadFileInput');
+            let file = fileInput.files[0];
+
+            if(!title || !file) {
+                alert("Please enter a title and select a video file!");
+                return;
+            }
+
+            let progressWrapper = document.getElementById('uploadProgressWrapper');
+            let progressBar = document.getElementById('uploadProgressBar');
+            let progressPercent = document.getElementById('uploadPercentage');
+            let statusText = document.getElementById('uploadStatusText');
+            let uploadBtn = document.getElementById('startUploadBtn');
+
+            progressWrapper.classList.remove('hidden');
+            uploadBtn.disabled = true;
+            uploadBtn.classList.add('opacity-50');
+            statusText.innerText = "Processing thumbnail & stream entry...";
+
+            try {
+                let thumbnailBase64 = await readThumbnailFile(thumbInput.files[0]);
+
+                let createUrl = `https://video.bunnycdn.com/library/${STREAM_CONFIG.libraryId}/videos`;
+                let createRes = await fetch(createUrl, {
+                    method: 'POST',
+                    headers: {
+                        'AccessKey': STREAM_CONFIG.apiKey,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ title: title })
+                });
+
+                if (!createRes.ok) throw new Error("Failed to create video entry.");
+                let videoData = await createRes.json();
+                let videoId = videoData.guid;
+
+                statusText.innerText = "Uploading binary stream to Bunny.net Cloud...";
+                progressBar.style.width = "25%";
+                progressPercent.innerText = "25%";
+
+                let uploadUrl = `https://video.bunnycdn.com/library/${STREAM_CONFIG.libraryId}/videos/${videoId}`;
+                let xhr = new XMLHttpRequest();
+                xhr.open('PUT', uploadUrl, true);
+                xhr.setRequestHeader('AccessKey', STREAM_CONFIG.apiKey);
+
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        let percent = Math.round(25 + ((e.loaded / e.total) * 75));
+                        progressBar.style.width = percent + '%';
+                        progressPercent.innerText = percent + '%';
+                    }
+                };
+
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        statusText.innerText = "Upload Successful!";
+                        let streamEmbedUrl = `https://${STREAM_CONFIG.cdnHostname}/${videoId}/playlist.m3u8`;
+                        let fallbackMp4Url = `https://${STREAM_CONFIG.cdnHostname}/${videoId}/play_720p.mp4`;
+
+                        saveUploadedDataLocally(title, desc, streamEmbedUrl, fallbackMp4Url, selectedCategory, videoId, thumbnailBase64);
+                    } else {
+                        alert("❌ Upload failed status: " + xhr.status);
+                        resetUploadUI();
+                    }
+                };
+
+                xhr.onerror = function() {
+                    alert("❌ Network Error during stream upload.");
+                    resetUploadUI();
+                };
+
+                xhr.send(file);
+            } catch (err) {
+                console.error("Upload Error:", err);
+                alert("❌ Stream upload failed!");
+                resetUploadUI();
+            }
+        };
+
+        function saveUploadedDataLocally(title, desc, streamUrl, fallbackUrl, category, videoId, thumbnailUrl) {
+            let savedMovies = JSON.parse(localStorage.getItem('mgsml_stream_movies') || '[]');
+            let newMovie = { 
+                id: videoId || Date.now(),
+                title, 
+                description: desc, 
+                videoUrl: streamUrl, 
+                fallbackUrl: fallbackUrl,
+                category: category,
+                thumbnail: thumbnailUrl || '',
+                views: Math.floor(Math.random() * 500) + 10,
+                likes: 0,
+                comments: []
+            };
+            savedMovies.unshift(newMovie);
+            localStorage.setItem('mgsml_stream_movies', JSON.stringify(savedMovies));
+
+            alert(`🎉 Success! Uploaded to Bunny.net as [${category.toUpperCase()}] & Auto-routed!`);
+            
+            document.getElementById('uploadTitleInput').value = "";
+            document.getElementById('uploadDescInput').value = "";
+            document.getElementById('uploadThumbnailInput').value = "";
+            document.getElementById('uploadFileInput').value = "";
+            resetUploadUI();
+
+            if(category === 'short') {
+                window.location.href = "shorts.html";
+            } else if(category === 'movie') {
+                window.location.href = "movies.html";
+            } else {
+                window.location.href = "index.html";
+            }
+        }
+
+        function resetUploadUI() {
+            let uploadBtn = document.getElementById('startUploadBtn');
+            uploadBtn.disabled = false;
+            uploadBtn.classList.remove('opacity-50');
+            document.getElementById('uploadProgressWrapper').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
