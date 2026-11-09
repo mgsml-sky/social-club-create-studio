@@ -51,7 +51,7 @@
                         MGSML SKY
                     </span>
                     <span class="text-[10px] font-extrabold text-green-400 tracking-widest">
-                        CREATOR STUDIO & MANAGER
+                        SOCIAL CLUB CREATOR STUDIO
                     </span>
                 </div>
             </div>
@@ -83,7 +83,7 @@
         </div>
     </nav>
 
-    <!-- Side Navigation Drawer with Edit Tool Trigger -->
+    <!-- Side Navigation Drawer -->
     <div id="sideDrawer" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-[900] hidden flex justify-start">
         <div class="w-72 bg-[#0c121d] h-full border-r border-cyan-400/40 p-5 flex flex-col justify-between shadow-2xl relative overflow-y-auto">
             <div class="space-y-6">
@@ -129,7 +129,7 @@
                 <h2 id="selectedCategoryTitle" class="text-base font-black bg-gradient-to-r from-yellow-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent uppercase tracking-wider">
                     Upload Short Video (≤60s)
                 </h2>
-                <p class="text-[11px] font-bold text-gray-300 mt-1">Direct Paid Enterprise Stream Upload via Bunny.net</p>
+                <p class="text-[11px] font-bold text-gray-300 mt-1">Social Club Store Enterprise Cloud Upload</p>
             </div>
 
             <!-- Upload Inputs Form -->
@@ -166,7 +166,7 @@
                 </div>
 
                 <button type="button" id="startUploadBtn" onclick="executeBunnyUpload()" class="w-full py-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-green-400 text-black font-black rounded-2xl text-sm shadow-xl shadow-green-500/20 active:scale-95 transition">
-                    UPLOAD TO BUNNY.NET & PUBLISH 🚀
+                    UPLOAD TO SOCIAL CLUB STORE 🚀
                 </button>
             </div>
 
@@ -174,7 +174,7 @@
 
     </main>
 
-    <!-- VIDEO EDIT & MANAGER MODAL (Link Paste & Live Preview Engine) -->
+    <!-- VIDEO EDIT & MANAGER MODAL -->
     <div id="editManagerModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[1000] hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-lg rounded-3xl p-6 border border-yellow-500/50 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -194,11 +194,9 @@
                     </div>
                 </div>
 
-                <!-- Edit Form Container with Live Video Preview (Hidden initially) -->
                 <div id="editFormContainer" class="hidden space-y-4 bg-slate-950 p-4 rounded-2xl border border-yellow-500/30">
                     <input type="hidden" id="editTargetVideoId">
                     
-                    <!-- Live Video Preview Screen -->
                     <div>
                         <label class="block text-xs font-bold text-cyan-400 mb-1.5">Live Video Preview</label>
                         <div class="relative rounded-xl overflow-hidden border border-cyan-500/40 bg-black shadow-inner" style="padding-top: 56.25%;">
@@ -257,7 +255,6 @@
 
         const LIBRARY_ID = "799000";
 
-        // Helper to convert thumbnail to Base64
         function readThumbnailFile(file) {
             return new Promise((resolve, reject) => {
                 if(!file) { resolve(null); return; }
@@ -268,12 +265,10 @@
             });
         }
 
-        // --- FIND VIDEO BY LINK OR ID & SHOW LIVE PREVIEW ---
         function findVideoForEditByLink() {
             let inputVal = document.getElementById('searchEditVideoLink').value.trim();
             if(!inputVal) { alert("Please paste a video link or ID!"); return; }
 
-            // Extract video ID/guid from link if full URL is pasted
             let videoId = inputVal;
             if(inputVal.includes('/')) {
                 let parts = inputVal.split('/');
@@ -291,7 +286,6 @@
                 document.getElementById('editDescInput').value = found.description || "";
                 document.getElementById('editCategorySelect').value = found.category || 'movie';
 
-                // Set Live Preview Iframe
                 let embedUrl = `https://iframe.mediadelivery.net/embed/${LIBRARY_ID}/${found.id}?autoplay=false&loop=false&muted=false`;
                 document.getElementById('editVideoPreviewIframe').src = embedUrl;
 
@@ -329,7 +323,7 @@
             }
         }
 
-        // --- MASTER BUNNY STREAM CONFIG & UPLOAD ---
+        // --- MASTER UPLOAD ENGINE & WALLET COIN REWARD SYSTEM ---
         const STREAM_CONFIG = {
             libraryId: LIBRARY_ID,
             apiKey: "8826df2c-1671-43b1-91f719e8614b-628a-4400",
@@ -357,7 +351,7 @@
             progressWrapper.classList.remove('hidden');
             uploadBtn.disabled = true;
             uploadBtn.classList.add('opacity-50');
-            statusText.innerText = "Processing thumbnail & stream entry...";
+            statusText.innerText = "Initializing Social Club Store Cloud Entry...";
 
             try {
                 let thumbnailBase64 = await readThumbnailFile(thumbInput.files[0]);
@@ -377,7 +371,7 @@
                 let videoData = await createRes.json();
                 let videoId = videoData.guid;
 
-                statusText.innerText = "Uploading binary stream to Bunny.net Cloud...";
+                statusText.innerText = "Uploading to Social Club Store Cloud...";
                 progressBar.style.width = "25%";
                 progressPercent.innerText = "25%";
 
@@ -396,9 +390,12 @@
 
                 xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 300) {
-                        statusText.innerText = "Upload Successful!";
+                        statusText.innerText = "100% Success! Depositing Coins to Wallet...";
                         let streamEmbedUrl = `https://${STREAM_CONFIG.cdnHostname}/${videoId}/playlist.m3u8`;
                         let fallbackMp4Url = `https://${STREAM_CONFIG.cdnHostname}/${videoId}/play_720p.mp4`;
+
+                        // Deposit Reward Coins directly to User Profile Wallet
+                        depositCoinsToWallet();
 
                         saveUploadedDataLocally(title, desc, streamEmbedUrl, fallbackMp4Url, selectedCategory, videoId, thumbnailBase64);
                     } else {
@@ -420,6 +417,23 @@
             }
         };
 
+        function depositCoinsToWallet() {
+            // Syncs with User Profile Wallet Storage Key ('mgsml_user_coins')
+            let currentCoins = parseInt(localStorage.getItem('mgsml_user_coins') || '0');
+            let uploadReward = 20; // Reward coins per successful upload
+            currentCoins += uploadReward;
+            localStorage.setItem('mgsml_user_coins', currentCoins);
+
+            // Also record transaction in wallet history if available
+            let walletLogs = JSON.parse(localStorage.getItem('mgsml_wallet_history') || '[]');
+            walletLogs.unshift({
+                type: 'EARN_UPLOAD',
+                amount: `+${uploadReward} Coins`,
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('mgsml_wallet_history', JSON.stringify(walletLogs));
+        }
+
         function saveUploadedDataLocally(title, desc, streamUrl, fallbackUrl, category, videoId, thumbnailUrl) {
             let savedMovies = JSON.parse(localStorage.getItem('mgsml_stream_movies') || '[]');
             let newMovie = { 
@@ -437,7 +451,7 @@
             savedMovies.unshift(newMovie);
             localStorage.setItem('mgsml_stream_movies', JSON.stringify(savedMovies));
 
-            alert(`🎉 Success! Uploaded to Bunny.net as [${category.toUpperCase()}] & Auto-routed!`);
+            alert(`🎉 Success! Uploaded to Social Club Store [${category.toUpperCase()}] & +20 Coins added to your Wallet!`);
             
             document.getElementById('uploadTitleInput').value = "";
             document.getElementById('uploadDescInput').value = "";
