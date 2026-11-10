@@ -70,7 +70,7 @@
         <div class="glass-card p-2 rounded-2xl border border-cyan-400/40 shadow-xl flex items-center justify-between space-x-2">
             <button type="button" id="cat-short" onclick="setCategory('short')" class="category-btn active flex-1 py-2.5 px-2 rounded-xl bg-slate-900 border border-pink-500 text-pink-400 font-black text-[11px] flex items-center justify-center space-x-1.5 shadow-md">
                 <i class="fa-solid fa-bolt"></i>
-                <span>Shorts</span>
+                <span>Shorts (&lt;3m)</span>
             </button>
             <button type="button" id="cat-medium" onclick="setCategory('medium')" class="category-btn flex-1 py-2.5 px-2 rounded-xl bg-slate-900 border border-cyan-500 text-cyan-400 font-black text-[11px] flex items-center justify-center space-x-1.5 shadow-md">
                 <i class="fa-solid fa-video"></i>
@@ -127,13 +127,18 @@
             
             <div class="text-center border-b border-cyan-400/20 pb-4">
                 <h2 id="selectedCategoryTitle" class="text-base font-black bg-gradient-to-r from-yellow-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent uppercase tracking-wider">
-                    Upload Short Video (≤60s)
+                    Upload Short Video (Max 3 Mins)
                 </h2>
                 <p class="text-[11px] font-bold text-gray-300 mt-1">Social Club Store Enterprise Cloud Upload</p>
             </div>
 
             <!-- Upload Inputs Form -->
             <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-black text-cyan-300 mb-1.5">Creator / Channel Name</label>
+                    <input type="text" id="uploadAuthorInput" placeholder="Enter your name or channel name..." class="w-full bg-slate-950 border-2 border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-white font-bold focus:outline-none focus:border-green-400">
+                </div>
+
                 <div>
                     <label class="block text-xs font-black text-cyan-300 mb-1.5">Video Title</label>
                     <input type="text" id="uploadTitleInput" placeholder="Enter catchy title..." class="w-full bg-slate-950 border-2 border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-white font-bold focus:outline-none focus:border-green-400">
@@ -150,7 +155,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-black text-cyan-300 mb-1.5">Choose Video File (Supports 2-3 Hour Long Movies)</label>
+                    <label class="block text-xs font-black text-cyan-300 mb-1.5">Choose Video File (Shorts: Max 3 Mins / Movies: Long)</label>
                     <input type="file" id="uploadFileInput" accept="video/*,audio/*" class="w-full bg-slate-950 border-2 border-cyan-500/50 rounded-xl p-2 text-xs text-gray-300 font-bold file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-cyan-500 file:text-black hover:file:bg-cyan-400 cursor-pointer">
                 </div>
 
@@ -205,6 +210,10 @@
                     </div>
 
                     <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Creator / Channel Name</label>
+                        <input type="text" id="editAuthorInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                    </div>
+                    <div>
                         <label class="block text-xs font-bold text-gray-300 mb-1">Edit Title</label>
                         <input type="text" id="editTitleInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold">
                     </div>
@@ -215,8 +224,8 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-300 mb-1">Edit Category</label>
                         <select id="editCategorySelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold">
-                            <option value="short">Short (≤60s)</option>
-                            <option value="medium">Medium (5-10m)</option>
+                            <option value="short">Short (Max 3M)</option>
+                            <option value="medium">Medium</option>
                             <option value="movie">Long Movie</option>
                         </select>
                     </div>
@@ -242,8 +251,8 @@
             document.getElementById(`cat-${cat}`).classList.add('active');
 
             let titleEl = document.getElementById('selectedCategoryTitle');
-            if(cat === 'short') titleEl.innerText = "Upload Short Video (≤60s)";
-            else if(cat === 'medium') titleEl.innerText = "Upload Medium Video (5-10m)";
+            if(cat === 'short') titleEl.innerText = "Upload Short Video (Max 3 Mins)";
+            else if(cat === 'medium') titleEl.innerText = "Upload Medium Video";
             else if(cat === 'movie') titleEl.innerText = "Upload Long Movie / Full Video";
         }
 
@@ -265,6 +274,20 @@
             });
         }
 
+        // Helper to get exact video duration in seconds before uploading
+        function getVideoDuration(file) {
+            return new Promise((resolve) => {
+                let video = document.createElement('video');
+                video.preload = 'metadata';
+                video.onloadedmetadata = function() {
+                    window.URL.revokeObjectURL(video.src);
+                    resolve(Math.round(video.duration));
+                }
+                video.onerror = function() { resolve(0); }
+                video.src = URL.createObjectURL(file);
+            });
+        }
+
         function findVideoForEditByLink() {
             let inputVal = document.getElementById('searchEditVideoLink').value.trim();
             if(!inputVal) { alert("Please paste a video link or ID!"); return; }
@@ -282,6 +305,7 @@
 
             if(found) {
                 document.getElementById('editTargetVideoId').value = found.id;
+                document.getElementById('editAuthorInput').value = found.authorName || "Social Club Creator";
                 document.getElementById('editTitleInput').value = found.title;
                 document.getElementById('editDescInput').value = found.description || "";
                 document.getElementById('editCategorySelect').value = found.category || 'movie';
@@ -297,6 +321,7 @@
 
         async function saveEditedVideoData() {
             let targetId = document.getElementById('editTargetVideoId').value;
+            let newAuthor = document.getElementById('editAuthorInput').value.trim() || "Social Club Creator";
             let newTitle = document.getElementById('editTitleInput').value.trim();
             let newDesc = document.getElementById('editDescInput').value.trim();
             let newCat = document.getElementById('editCategorySelect').value;
@@ -306,6 +331,7 @@
             let index = savedMovies.findIndex(m => String(m.id) === String(targetId));
 
             if(index !== -1) {
+                savedMovies[index].authorName = newAuthor;
                 savedMovies[index].title = newTitle;
                 savedMovies[index].description = newDesc;
                 savedMovies[index].category = newCat;
@@ -316,7 +342,7 @@
                 }
 
                 localStorage.setItem('mgsml_stream_movies', JSON.stringify(savedMovies));
-                alert("✨ Video details and thumbnail updated successfully!");
+                alert("✨ Video details and channel name updated successfully!");
                 closeEditManagerModal();
             } else {
                 alert("❌ Update failed!");
@@ -331,6 +357,7 @@
         };
 
         window.executeBunnyUpload = async function() {
+            let authorName = document.getElementById('uploadAuthorInput').value.trim() || "Social Club Creator";
             let title = document.getElementById('uploadTitleInput').value.trim();
             let desc = document.getElementById('uploadDescInput').value.trim();
             let thumbInput = document.getElementById('uploadThumbnailInput');
@@ -339,6 +366,15 @@
 
             if(!title || !file) {
                 alert("Please enter a title and select a video file!");
+                return;
+            }
+
+            // Check actual video duration
+            let durationSec = await getVideoDuration(file);
+
+            // STRICT VALIDATION: If user selected 'short' category, duration must be <= 180 seconds (3 mins)
+            if(selectedCategory === 'short' && durationSec > 180) {
+                alert(`❌ Upload Error: Selected video duration is ${Math.round(durationSec/60)} minutes! Shorts category only allows videos up to 3 minutes.`);
                 return;
             }
 
@@ -394,10 +430,9 @@
                         let streamEmbedUrl = `https://${STREAM_CONFIG.cdnHostname}/${videoId}/playlist.m3u8`;
                         let fallbackMp4Url = `https://${STREAM_CONFIG.cdnHostname}/${videoId}/play_720p.mp4`;
 
-                        // Deposit Reward Coins directly to User Profile Wallet
                         depositCoinsToWallet();
 
-                        saveUploadedDataLocally(title, desc, streamEmbedUrl, fallbackMp4Url, selectedCategory, videoId, thumbnailBase64);
+                        saveUploadedDataLocally(authorName, title, desc, streamEmbedUrl, fallbackMp4Url, selectedCategory, videoId, thumbnailBase64, durationSec);
                     } else {
                         alert("❌ Upload failed status: " + xhr.status);
                         resetUploadUI();
@@ -418,13 +453,11 @@
         };
 
         function depositCoinsToWallet() {
-            // Syncs with User Profile Wallet Storage Key ('mgsml_user_coins')
             let currentCoins = parseInt(localStorage.getItem('mgsml_user_coins') || '0');
-            let uploadReward = 20; // Reward coins per successful upload
+            let uploadReward = 20;
             currentCoins += uploadReward;
             localStorage.setItem('mgsml_user_coins', currentCoins);
 
-            // Also record transaction in wallet history if available
             let walletLogs = JSON.parse(localStorage.getItem('mgsml_wallet_history') || '[]');
             walletLogs.unshift({
                 type: 'EARN_UPLOAD',
@@ -434,15 +467,17 @@
             localStorage.setItem('mgsml_wallet_history', JSON.stringify(walletLogs));
         }
 
-        function saveUploadedDataLocally(title, desc, streamUrl, fallbackUrl, category, videoId, thumbnailUrl) {
+        function saveUploadedDataLocally(authorName, title, desc, streamUrl, fallbackUrl, category, videoId, thumbnailUrl, durationSec) {
             let savedMovies = JSON.parse(localStorage.getItem('mgsml_stream_movies') || '[]');
             let newMovie = { 
                 id: videoId || Date.now(),
+                authorName: authorName,
                 title, 
                 description: desc, 
                 videoUrl: streamUrl, 
                 fallbackUrl: fallbackUrl,
                 category: category,
+                duration: durationSec,
                 thumbnail: thumbnailUrl || '',
                 views: Math.floor(Math.random() * 500) + 10,
                 likes: 0,
@@ -453,6 +488,7 @@
 
             alert(`🎉 Success! Uploaded to Social Club Store [${category.toUpperCase()}] & +20 Coins added to your Wallet!`);
             
+            document.getElementById('uploadAuthorInput').value = "";
             document.getElementById('uploadTitleInput').value = "";
             document.getElementById('uploadDescInput').value = "";
             document.getElementById('uploadThumbnailInput').value = "";
